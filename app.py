@@ -60,8 +60,8 @@ st.title("Sales & Inventory Tracker")
 st.caption("Simple sales, inventory, and profitability management")
 
 if not DB_PATH.exists():
-    st.error("Database not found. Run python database.py first.")
-    st.stop()
+    from database import initialize_database
+    initialize_database()
 
 try:
     inventory, sales = load_data()
