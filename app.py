@@ -60,9 +60,8 @@ def change_inventory(amount):
 st.title("Sales & Inventory Tracker")
 st.caption("Simple sales, inventory, and profitability management")
 
-if not DB_PATH.exists():
-    from database import initialize_database
-    initialize_database()
+from database import initialize_database
+initialize_database()
 
 try:
     inventory, sales = load_data()
