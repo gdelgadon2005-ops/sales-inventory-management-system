@@ -1,11 +1,11 @@
 Sales, Inventory & Profitability Management System
 
-I started this project in my free time because I wanted to get more hands-on experience with Python and SQL while building something that could actually be useful.
+I developed this project independently to further explore Python, SQL, and database management through a practical application.
 
-I decided to create a sales and inventory management application that allows users to record transactions, keep track of inventory, and get a better understanding of their business's financial performance.
+The application is designed to simplify sales tracking, inventory management, and financial analysis. It allows users to record transactions, monitor inventory levels, and track key financial metrics such as revenue, gross profit, and profit margins.
 
-The application automatically updates inventory whenever a sale is recorded and calculates revenue, gross profit, and profit margins. I also added a profitability calculator where users can experiment with different selling prices, product costs, and expenses to see how those changes could affect their earnings.
+Inventory levels are automatically updated with each recorded sale, while a built-in profitability calculator allows users to explore how different pricing strategies, product costs, and operating expenses can impact potential earnings. The application also includes sales history and analytics to visualize performance over time.
 
-I used Python and SQLite to manage the data, Streamlit to build the interactive website, and Pandas to organize and analyze sales information.
+I built the application using Python, SQLite for data storage and management, Streamlit for the interactive interface, and Pandas for organizing and analyzing sales data.
 
-This was a fun way for me to put what I've been learning into practice, especially when it came to working with databases, connecting different parts of a program, and figuring out how to turn my code into an actual working application.
+This project allowed me to apply my programming knowledge beyond coursework while gaining practical experience in database integration, application development, and financial data analysis.
