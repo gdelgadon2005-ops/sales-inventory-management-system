@@ -1,9 +1,12 @@
-# BRIEL Sales, Inventory & Profitability Management System
+# Sales, Inventory & Profitability Management System
 
 import sqlite3
 from datetime import datetime
+from pathlib import Path
 
-DATABASE = "briel.db"
+from database import initialize_database
+
+DATABASE = str(Path(__file__).resolve().parent / "inventory.db")
 PRODUCT_ID = 1
 
 
@@ -72,6 +75,7 @@ def save_inventory():
 # INITIALIZE DATABASE
 # ==========================================
 
+initialize_database()
 setup_sales_database()
 
 product_name, inventory, price, cost = get_product()
@@ -107,8 +111,8 @@ def get_decimal(prompt):
 # STARTUP INVENTORY CHECK
 # ==========================================
 
-print("\n=== BRIEL INVENTORY CHECK ===")
-print("Current inventory:", inventory, "bottles")
+print("\n=== INVENTORY CHECK ===")
+print("Current inventory:", inventory, "units")
 
 update = input("Does inventory need to be updated? (yes/no): ").lower().strip()
 
@@ -119,7 +123,7 @@ if update == "yes":
     choice_update = input("Choose an option (1-2): ")
 
     if choice_update == "1":
-        new_stock = get_integer("How many bottles arrived? ")
+        new_stock = get_integer("How many units arrived? ")
 
         inventory += new_stock
         save_inventory()
@@ -487,7 +491,7 @@ while True:
         sales_analytics()
 
     elif choice == "8":
-        print("Goodbye! Thanks for using BRIEL.")
+        print("Goodbye! Thanks for using the Sales & Inventory Tracker.")
         break
 
     else:

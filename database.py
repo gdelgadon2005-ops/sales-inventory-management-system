@@ -1,8 +1,7 @@
-
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent / "briel.db"
+DB_PATH = Path(__file__).resolve().parent / "inventory.db"
 
 
 def connect():
@@ -34,18 +33,18 @@ def initialize_database():
                 ADD COLUMN cost REAL NOT NULL DEFAULT 0
             """)
 
-        # Add starting product if it doesn't already exist
+        # Add a sample product if it doesn't already exist
         cursor.execute("""
             INSERT OR IGNORE INTO inventory
             (id, product_name, quantity, price, cost)
             VALUES (?, ?, ?, ?, ?)
-        """, (
-            1,
-            "BRIEL Shampoo",
-            100,
-            49.99,
-            11.99
-        ))
+        """, (1, "Sample Product", 100, 49.99, 11.99))
+
+        # Ensure the demo product has a generic name without resetting its data
+        cursor.execute(
+            "UPDATE inventory SET product_name = ? WHERE id = ?",
+            ("Sample Product", 1)
+        )
 
         # Create sales table
         cursor.execute("""
@@ -56,8 +55,7 @@ def initialize_database():
                 quantity INTEGER NOT NULL,
                 revenue REAL NOT NULL,
                 cost_of_goods REAL NOT NULL,
-                FOREIGN KEY (product_id)
-                    REFERENCES inventory(id)
+                FOREIGN KEY (product_id) REFERENCES inventory(id)
             )
         """)
 

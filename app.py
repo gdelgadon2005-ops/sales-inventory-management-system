@@ -4,9 +4,10 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="Sales & Inventory Tracker", page_icon="🧴", layout="wide")
-DB_PATH = Path(__file__).resolve().parent / "briel.db"
+st.set_page_config(page_title="Sales & Inventory Tracker", page_icon="📊", layout="wide")
+DB_PATH = Path(__file__).resolve().parent / "inventory.db"
 PRODUCT_ID = 1
+DISPLAY_PRODUCT_NAME = "Sample Product"
 
 
 def connect():
@@ -33,10 +34,10 @@ def record_sale(quantity):
             "SELECT quantity, price, cost FROM inventory WHERE id = ?", (PRODUCT_ID,)
         ).fetchone()
         if row is None:
-            raise ValueError("BRIEL Shampoo was not found in inventory.")
+            raise ValueError("The product was not found in inventory.")
         available, price, cost = row
         if quantity > available:
-            raise ValueError(f"Only {available} bottles are available.")
+            raise ValueError(f"Only {available} units are available.")
         conn.execute("UPDATE inventory SET quantity = quantity - ? WHERE id = ?", (quantity, PRODUCT_ID))
         conn.execute(
             "INSERT INTO sales (product_id, sale_date, quantity, revenue, cost_of_goods) "
@@ -70,7 +71,7 @@ except (sqlite3.Error, pd.errors.DatabaseError) as error:
     st.stop()
 
 if inventory.empty:
-    st.error("BRIEL Shampoo is missing from the inventory table.")
+    st.error("The sample product is missing from the inventory table.")
     st.stop()
 
 product = inventory.iloc[0]
@@ -84,7 +85,7 @@ margin = (gross_profit / revenue * 100) if revenue else 0.0
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Total Revenue", f"${revenue:,.2f}")
 c2.metric("Gross Profit", f"${gross_profit:,.2f}")
-c3.metric("Inventory", f"{stock} bottles")
+c3.metric("Inventory", f"{stock} units")
 c4.metric("Gross Margin", f"{margin:.1f}%")
 
 st.divider()
@@ -94,9 +95,9 @@ tab_sale, tab_inventory, tab_profit, tab_history, tab_analytics = st.tabs([
 
 with tab_sale:
     st.subheader("Record a New Sale")
-    st.write(f"**Product:** {product['product_name']}")
-    st.write(f"**Price:** ${price:.2f} per bottle")
-    st.write(f"**Available:** {stock} bottles")
+    st.write(f"**Product:** {DISPLAY_PRODUCT_NAME}")
+    st.write(f"**Price:** ${price:.2f} per unit")
+    st.write(f"**Available:** {stock} units")
     with st.form("record_sale"):
         quantity = st.number_input("Quantity sold", min_value=1, step=1, value=1)
         st.write(f"**Sale total:** ${quantity * price:,.2f}")
@@ -111,9 +112,9 @@ with tab_sale:
 
 with tab_inventory:
     st.subheader("Manage Inventory")
-    st.metric("Current Inventory", f"{stock} bottles")
+    st.metric("Current Inventory", f"{stock} units")
     with st.form("adjust_inventory"):
-        adjustment = st.number_input("Bottles to add (use a negative number to remove)", value=0, step=1)
+        adjustment = st.number_input("Units to add (use a negative number to remove)", value=0, step=1)
         submit_inventory = st.form_submit_button("Update Inventory")
     if submit_inventory:
         try:
@@ -131,9 +132,9 @@ with tab_profit:
     st.caption("Operating expenses entered here are for this calculation only and are not saved.")
     st.divider()
     st.subheader("What-if Simulator")
-    sim_price = st.number_input("Selling price per bottle ($)", min_value=0.0, value=price)
-    sim_cost = st.number_input("Cost per bottle ($)", min_value=0.0, value=cost)
-    sim_units = st.number_input("Projected bottles sold", min_value=0, value=100, step=1)
+    sim_price = st.number_input("Selling price per unit ($)", min_value=0.0, value=price)
+    sim_cost = st.number_input("Cost per unit ($)", min_value=0.0, value=cost)
+    sim_units = st.number_input("Projected units sold", min_value=0, value=100, step=1)
     sim_expenses = st.number_input("Projected expenses ($)", min_value=0.0, value=0.0)
     st.metric("Projected Revenue", f"${sim_price * sim_units:,.2f}")
     st.metric("Projected Profit Before Tax", f"${(sim_price - sim_cost) * sim_units - sim_expenses:,.2f}")
@@ -153,7 +154,7 @@ with tab_analytics:
         st.info("Record your first sale to see analytics.")
     else:
         st.metric("Transactions", len(sales))
-        st.metric("Bottles Sold", int(sales["quantity"].sum()))
+        st.metric("Units Sold", int(sales["quantity"].sum()))
         monthly = sales.copy()
         monthly["month"] = pd.to_datetime(monthly["sale_date"]).dt.to_period("M").astype(str)
         summary = monthly.groupby("month", as_index=False)[["revenue", "cost_of_goods"]].sum()
